@@ -91,7 +91,7 @@ def startNode(tickers):
 
 def main():
     marketStrings = []
-    marketData = ['BTC-LTC','BTC-BAT','BTC-TUSD', 'BTC-XRP', 'USDT-XMR', 'USDT-BTC']#get_market_summaries()
+    marketData = ['BTC-LTC','BTC-BAT','BTC-TUSD', 'BTC-XRP', 'USDT-XMR', 'USDT-BTC', 'ETH-XRP', 'ETH-NEO', 'ETH-XMR', 'BTC-XMR', 'BTC-GAME', 'BTC-BSV', 'BTC-DGB']#get_market_summaries()
     for i in marketData:
         
         if(os.path.isdir("./data/" + i) == False):
