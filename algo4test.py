@@ -8,7 +8,9 @@ from time import sleep
 from bittrex_websocket import OrderBook
 import threading
 import json
+import os
 import GF
+import time
 import requests
 def get_market_summaries():
     # api-endpoint
@@ -56,8 +58,9 @@ def startNode(tickers):
     counter = 0
     #while(counter < 150):
     #sleep(10)
-    for i in tickers:
-        while(counter < 6):
+    while(True):
+        for i in tickers:
+        
             book = ws.get_order_book(i)
             #print(i)
             if(book != None):
@@ -66,15 +69,20 @@ def startNode(tickers):
                     #json.dump({"book": book, "data": getOrderData(book)}, json_file)
                     json.dump({"book":book}, json_file)
                     json_file.close()"""
-                with open("./orderData/" + book['ticker'] + ":" + str(book['timestamp']) + ".json", 'w') as json_file:
+                
+                
+                timestamp = time.time()
+                with open("./data/" + book['ticker'] + "/" + book['ticker'] + ":" + str(timestamp) + ".json", 'w') as json_file:
                     #json.dump({"book": book, "data": getOrderData(book)}, json_file)
                     json.dump({"book":book}, json_file)
                     json_file.close()
-                sleep(30)
+                
+                
             else:
                 print("ERROR: -> NULL:  " + i)
                 sleep(2)
                 counter += 1
+        sleep(30)
         counter = 0
         #counter++
     #else:
@@ -83,10 +91,18 @@ def startNode(tickers):
 
 def main():
     marketStrings = []
-    marketData = ['BTC-LTC']#get_market_summaries()
+    marketData = ['BTC-LTC','BTC-BAT','BTC-TUSD', 'BTC-XRP', 'USDT-XMR', 'USDT-BTC']#get_market_summaries()
+    for i in marketData:
+        
+        if(os.path.isdir("./data/" + i) == False):
+            print("Creating " + i + " folder.")
+            os.mkdir("./data/" + i)
+        else:
+            print("Already created " + i + " folder.")
+
     for i in marketData:
         marketStrings.append(i)
-    startNode(marketStrings)
+    startNode(marketData)
     
 if __name__ == "__main__":
     main()
