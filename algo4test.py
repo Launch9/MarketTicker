@@ -10,8 +10,8 @@ import threading
 import json
 import os
 import GF
-import time
 import requests
+
 def get_market_summaries():
     # api-endpoint
     url = "https://api.bittrex.com/api/v1.1/public/getmarketsummaries"
@@ -70,12 +70,14 @@ def startNode(tickers):
                     json.dump({"book":book}, json_file)
                     json_file.close()"""
                 
-                
-                timestamp = time.time()
-                with open("./data/" + book['ticker'] + "/" + book['ticker'] + ":" + str(timestamp) + ".json", 'w') as json_file:
-                    #json.dump({"book": book, "data": getOrderData(book)}, json_file)
-                    json.dump({"book":book}, json_file)
-                    json_file.close()
+                if(hasattr(book, 'timestamp')):
+                    timestamp = book['timestamp']
+                    with open("./data/" + book['ticker'] + "/" + book['ticker'] + ":" + str(timestamp) + ".json", 'w') as json_file:
+                        #json.dump({"book": book, "data": getOrderData(book)}, json_file)
+                        json.dump({"book":book}, json_file)
+                        json_file.close()
+                else:
+                    print()
                 
                 
             else:
