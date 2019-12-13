@@ -77,7 +77,7 @@ void _findAddressChanges(char* filenameInput, char* filenameOutput){
     bool isPastColon = false;
     bool isPastFirstDot = false;
     //Finding timestamp
-    for(int i = 0; i < timestampString.length(); i++){
+    /*for(int i = 0; i < timestampString.length(); i++){
         if(timestampString[i] == ':'){
             isPastColon = true;
             continue;
@@ -94,9 +94,9 @@ void _findAddressChanges(char* filenameInput, char* filenameOutput){
             numberString = numberString + timestampString[i];
         }
 
-    }
-    top["book"]["timestamp"] = std::stof(numberString);
-    std::cout << numberString << std::endl;
+    }*/
+    top["book"]["timestamp"] = book["timestamp"];//std::stof(numberString);
+    //std::cout << numberString << std::endl;
     top["book"]["data"]["SELL"] = vec;
     top["book"]["data"]["BUY"] = buyVec;
     //Writing results to file

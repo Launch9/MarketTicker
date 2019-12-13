@@ -9,8 +9,8 @@ import time
 from os.path import isfile, join
 import CMethods
 print("Starting!")
-mypath = "./tickerData/BTC-LTC"
-myoutputpath = "./CMData/BTC-LTC"
+mypath = "./tickerData/BTC-XMR"
+myoutputpath = "./CMData/BTC-XMR"
 onlyfiles = [f for f in sorted(listdir(mypath)) if isfile(join(mypath, f))]
 counter = 0
 for i in onlyfiles:
@@ -52,8 +52,9 @@ plt.plot(coordinateData['x'], coordinateData['y'])
 
 counter = 0
 outfiles = [f for f in sorted(listdir(myoutputpath)) if isfile(join(myoutputpath, f))]
+
 for i in outfiles:
-    if(counter % 1000 == 0):
+    if(counter % 250 == 0):
         print(myoutputpath + "/" + i)
         json_file = None
         with open(myoutputpath + "/" + i) as json_file:
@@ -67,7 +68,7 @@ for i in outfiles:
                
                 plt.scatter(float(data2['book']['timestamp']), b["P"], c="green")
             json_file.close()
-    
+    print("Plotting dots: " + str((counter / len(outfiles)) * 100))
     #print("Plotting points: " + str((counter / len(outfiles)) * 100))
     counter += 1
             
@@ -75,6 +76,7 @@ for i in outfiles:
 plt.xlabel('Date')
 plt.ylabel('Price')
 plt.show()
+#https://bittrex.com/Api/v2.0/pub/market/GetTicks?marketName=BTC-XMR&tickInterval=onemin&_=1499127220008
 """for i in onlyfiles:
     counter2 += 1
     with open(mypath + "/" + i) as json_file:

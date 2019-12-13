@@ -1,12 +1,16 @@
 from __future__ import print_function
 from time import sleep
 from bittrex_websocket import OrderBook
+from datetime import datetime, timedelta
 import json
 import os
 def startNode(tickerz):
     class MySocket(OrderBook):
+        latest_ping = datetime.now()
         def on_ping(self, msg):
-            b = 1
+            self.latest_ping = datetime.now()
+            
+            
             
             
                     
@@ -19,7 +23,7 @@ def startNode(tickerz):
     tickers = tickerz
     # Subscribe to order book updates
     ws.subscribe_to_orderbook(tickers)
-
+    
     while True:
         for i in tickers:
             book = ws.get_order_book(i)
@@ -29,7 +33,18 @@ def startNode(tickerz):
                         #json.dump({"book": book, "data": getOrderData(book)}, json_file)
                         json.dump({"book":book}, json_file)
                         json_file.close()
-        sleep(30)
+                    
+        
+        delta = (datetime.now() - ws.latest_ping)
+        print("Latest delta: " + str(float(delta.seconds)))
+        
+        if(delta != None):
+            if(delta.seconds > 120):
+                return False
+            
+                
+        
+        sleep(5)
     else:
         pass
 
@@ -43,8 +58,10 @@ def main():
             os.mkdir("./data/" + i)
         else:
             print("Already created " + i + " folder.")
+    while(True):
+        startNode(marketData)
+        print("RESTARTING")
 
-    startNode(marketData)
 
 if __name__ == "__main__":
     main()
