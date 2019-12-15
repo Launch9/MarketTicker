@@ -7,8 +7,8 @@ lib = cdll.LoadLibrary("./builds/libCAlgos.so")
 def test():
     lib.Foo_bar("hello".encode())
 
-def findAddressChanges(filenameInput, filenameOutput):
-    lib.findAddressChanges(filenameInput, filenameOutput)
+def findAddressChanges(filenameInput, filenameOutput, candleFilePath, algoType):
+    lib.findAddressChanges(filenameInput, filenameOutput, candleFilePath, algoType)
 
 """class Foo(object):
     def __init__(self):

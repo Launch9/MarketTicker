@@ -44,7 +44,7 @@ def startNode(tickerz):
             
                 
         
-        sleep(5)
+        sleep(30)
     else:
         pass
 
