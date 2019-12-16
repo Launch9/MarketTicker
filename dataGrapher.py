@@ -11,21 +11,21 @@ from os.path import isfile, join
 import CMethods
 import shutil
 print("Starting!")
-algoNumber = 1
-INPUT_PATH = "./data/BTC-BAT"
-OUTPUT_PATH = "./CMData/BTC-BAT"
+algoNumber = 0
+INPUT_PATH = "./data/BTC-XRP"
+OUTPUT_PATH = "./CMData/BTC-XRP"
 CANDLE_PATH = "./ETH-NEOcandles.json"
 onlyfiles = [f for f in sorted(listdir(INPUT_PATH)) if isfile(join(INPUT_PATH, f))]
 counter = 0
 
 #Cleaning files
-"""if(os.path.exists(OUTPUT_PATH)):
+if(os.path.exists(OUTPUT_PATH)):
     shutil.rmtree(OUTPUT_PATH)
 os.mkdir(OUTPUT_PATH)
 for i in onlyfiles:
     CMethods.findAddressChanges((INPUT_PATH + "/" + i).encode(), (OUTPUT_PATH + "/" + i).encode(), CANDLE_PATH.encode(), algoNumber)
     print("Compiling data: " + str((counter / len(onlyfiles)) * 100))
-    counter += 1"""
+    counter += 1
 
 counter = 0
 #Plotting the candles
