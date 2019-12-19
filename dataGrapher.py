@@ -12,9 +12,10 @@ import CMethods
 import shutil
 print("Starting!")
 algoNumber = 0
-INPUT_PATH = "./data/BTC-XRP"
-OUTPUT_PATH = "./CMData/BTC-XRP"
-CANDLE_PATH = "./ETH-NEOcandles.json"
+everySo = 1
+INPUT_PATH = "./data/USDT-BAT"
+OUTPUT_PATH = "./CMData/USDT-BAT"
+CANDLE_PATH = "./candles/USDT-BAT-c.json"
 onlyfiles = [f for f in sorted(listdir(INPUT_PATH)) if isfile(join(INPUT_PATH, f))]
 counter = 0
 
@@ -23,7 +24,8 @@ if(os.path.exists(OUTPUT_PATH)):
     shutil.rmtree(OUTPUT_PATH)
 os.mkdir(OUTPUT_PATH)
 for i in onlyfiles:
-    CMethods.findAddressChanges((INPUT_PATH + "/" + i).encode(), (OUTPUT_PATH + "/" + i).encode(), CANDLE_PATH.encode(), algoNumber)
+    if(counter % everySo == 0):
+        CMethods.findAddressChanges((INPUT_PATH + "/" + i).encode(), (OUTPUT_PATH + "/" + i).encode(), CANDLE_PATH.encode(), algoNumber)
     print("Compiling data: " + str((counter / len(onlyfiles)) * 100))
     counter += 1
 
@@ -43,10 +45,40 @@ def splitXandY(points, xLabel, yLabel):
         yArray.append(i[yLabel])
     return {'x':xArray, 'y': yArray}
 
+def dateToUnix(date):
+    year = 0
+    month = 0
+    day = 0
+    hour = 0
+    minute = 0
+    second = 0
+    temp = ""
+    ticker = 0
+    for i in date:
+        if(i == '-' or i == 'T' or i == ":"):
+            if(ticker == 0):
+                year = int(temp)
+            if(ticker == 1):
+                month = int(temp)
+            if(ticker == 2):
+                day = int(temp)
+            if(ticker == 3):
+                hour = int(temp)
+            if(ticker == 4):
+                minute = int(temp)
+            if(ticker == 5):
+                second = int(temp)
+            temp = ""
+            ticker += 1
+            continue
+        temp = temp + i
+    return (datetime(year,month,day,hour,minute,second) - datetime(1970, 1, 1)).total_seconds()
+
 for i in candles["result"]:
-    unixtime = time.mktime(time.strptime(i['T'], '%Y-%m-%dT%H:%M:%S'))
+    unixtime = dateToUnix(i["T"])#time.mktime(time.strptime(i['T'], '%Y-%m-%dT%H:%M:%S'))
     
     i['TM'] = float(unixtime)
+    #i['TM'] = i['T']
     i['C'] = float(i['C'])
     print("Plotting candles: " + str((counter / len(candles["result"])) * 100))
     counter += 1
@@ -57,6 +89,8 @@ plt.plot(coordinateData['x'], coordinateData['y'])
 counter = 0
 outfiles = [f for f in sorted(listdir(OUTPUT_PATH)) if isfile(join(OUTPUT_PATH, f))]
 
+
+    
 def convertRGBtoHex(r,g,b):
     if(r > 255):
         r = 255
@@ -72,75 +106,29 @@ def convertRGBtoHex(r,g,b):
         b = 0
     return '#%02x%02x%02x' % (r,g,b)
 
-def algo0(data):
-    for b in data['book']['data']['SELL']:
-        plt.scatter(float(data['book']['timestamp']), b["P"], c="red")
-    for b in data['book']['data']['BUY']:       
-        plt.scatter(float(data['book']['timestamp']), b["P"], c="green")
-
-def algo1(data):
-    orderList = data['book']['data']['SELL']
-    #SELL DATA
-    if(len(orderList) != 0 and len(orderList) != 1):
-        minQ = float(orderList[0]['Q'])
-        maxQ = float(orderList[len(orderList) - 1]['Q'])
-        Qrange = maxQ - minQ
-        for b in data['book']['data']['BUY']:
-            newRange = maxQ - b['Q']
-            colorPercent = newRange/Qrange
-            newColor = convertRGBtoHex(255, 0, 0)
-            alphaValue = colorPercent
-            if(alphaValue > 1.0):
-                alphaValue = 1.0
-            elif(alphaValue < 0.0):
-                alphaValue = 0.0
-            plt.scatter(float(data['book']['timestamp']), b["R"], c=newColor, alpha=alphaValue)
-    else:
-        for b in data['book']['data']['BUY']:
-            plt.scatter(float(data['book']['timestamp']), b["R"], c="blue")
-    #BUY DATA
-    orderList = data['book']['data']['BUY']
-    if(len(orderList) != 0 and len(orderList) != 1):
-        minQ = float(orderList[0]['Q'])
-        maxQ = float(orderList[len(orderList) - 1]['Q'])
-        Qrange = maxQ - minQ
-        for b in data['book']['data']['BUY']:
-            newRange = maxQ - b['Q']
-            colorPercent = newRange/Qrange
-            newColor = convertRGBtoHex(0, 255, 0)
-            alphaValue = colorPercent
-            if(alphaValue > 1.0):
-                alphaValue = 1.0
-            elif(alphaValue < 0.0):
-                alphaValue = 0.0
-            plt.scatter(float(data['book']['timestamp']), b["R"], c=newColor, alpha=alphaValue)
-    else:
-        for b in data['book']['data']['BUY']:
-            plt.scatter(float(data['book']['timestamp']), b["R"], c="blue")
-
-def algo2(data):
-    for b in data['book']['data']['SELL']:
-        plt.scatter(float(data['book']['timestamp']), b["R"], c="red")
-    for b in data['book']['data']['BUY']:       
-        plt.scatter(float(data['book']['timestamp']), b["R"], c="green")
-
-
+SCX = []
+SCY = []
+SCC = []
 for i in outfiles:
-    if(counter % 250 == 0):
-        json_file = None
-        with open(OUTPUT_PATH + "/" + i) as json_file:
-            data2 = json.load(json_file)
-            if(algoNumber == 0):
-                algo0(data2)
-            elif(algoNumber == 1):
-                algo1(data2)
-            elif(algoNumber == 2):
-                algo2(data2)
-            json_file.close()
+    
+    
+    json_file = None
+    with open(OUTPUT_PATH + "/" + i) as json_file:
+        data2 = json.load(json_file)
+        SCX += data2["book"]["data"]["x"]
+        SCY += data2["book"]["data"]["y"]
+        SCC += data2["book"]["data"]["c"]
+        """if(algoNumber == 0):
+            algo0(data2["book"]["data"])
+        elif(algoNumber == 1):
+            algo1(data2)
+        elif(algoNumber == 2):
+            algo2(data2)"""
+        json_file.close()
     print("Plotting dots: " + str((counter / len(outfiles)) * 100))
     counter += 1
             
-
+plt.scatter(SCX, SCY, c=SCC)
 
 plt.xlabel('Date')
 plt.ylabel('Price')
