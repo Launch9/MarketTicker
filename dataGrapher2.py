@@ -11,12 +11,12 @@ from os.path import isfile, join
 import CMethods
 import shutil
 print("Starting!")
-algoNumber = 6
+algoNumber = 1
 everySo = 1
 INPUT_PATH = "./data/USDT-BAT"
 SUMMARIES_PATH = "./data/summaries/"
 OUTPUT_PATH = "./CMData/USDT-BAT"
-CANDLE_PATH = "./candles/USDT-BAT-c.json"
+CANDLE_PATH = "./candles/USDT-BTC-c.json"
 fig, (ax1) = plt.subplots(1)
 fig.suptitle('Bottom: Volume - Top: Candles')
 
@@ -25,14 +25,14 @@ summaryfiles = [f for f in sorted(listdir(SUMMARIES_PATH)) if isfile(join(SUMMAR
 counter = 0
 
 #Cleaning files
-if(os.path.exists(OUTPUT_PATH)):
+"""if(os.path.exists(OUTPUT_PATH)):
     shutil.rmtree(OUTPUT_PATH)
 os.mkdir(OUTPUT_PATH)
-for i in onlyfiles:
+for i in summaryfiles:
     if(counter % everySo == 0):
-        CMethods.findAddressChanges((INPUT_PATH + "/" + i).encode(), (OUTPUT_PATH + "/" + i).encode(), CANDLE_PATH.encode(), (SUMMARIES_PATH + summaryfiles[counter]).encode(), algoNumber)
+        CMethods.findAddressChanges((INPUT_PATH + "/" + onlyfiles[counter]).encode(), (OUTPUT_PATH + "/" + onlyfiles[counter]).encode(), CANDLE_PATH.encode(), (SUMMARIES_PATH + i).encode(), algoNumber)
     print("Compiling data: " + str((counter / len(summaryfiles)) * 100))
-    counter += 1
+    counter += 1"""
 
 counter = 0
 #Plotting the candles
@@ -48,6 +48,14 @@ def splitXandY(points, xLabel, yLabel):
     for i in points:
         xArray.append(i[xLabel])
         yArray.append(i[yLabel])
+    return {'x':xArray, 'y': yArray}
+
+def splitXandY2(points, xLabel, yLabel):
+    xArray = []
+    yArray = []
+    for i in points:
+        xArray.append(i[xLabel])
+        yArray.append((i[yLabel]) + 8000)
     return {'x':xArray, 'y': yArray}
 
 def dateToUnix(date):
@@ -89,10 +97,10 @@ for i in candles["result"]:
     counter += 1
 
 coordinateData = splitXandY(candles['result'], 'TM', 'C')
-#volumeData = splitXandY(candles['result'], 'TM', 'V')
+volumeData = splitXandY2(candles['result'], 'TM', 'V')
 #baseVolumeData = splitXandY(candles['result'], 'TM', 'H')
 ax1.plot(coordinateData['x'], coordinateData['y'])
-#ax2.plot(volumeData['x'], volumeData['y'])
+ax1.plot(volumeData['x'], volumeData['y'])
 
 
 counter = 0
@@ -118,7 +126,7 @@ def convertRGBtoHex(r,g,b):
 SCX = []
 SCY = []
 SCC = []
-for i in outfiles:
+"""for i in outfiles:
     
     
     json_file = None
@@ -127,17 +135,17 @@ for i in outfiles:
         SCX += data2["book"]["data"]["x"]
         SCY += data2["book"]["data"]["y"]
         SCC += data2["book"]["data"]["c"]
-        """if(algoNumber == 0):
+        if(algoNumber == 0):
             algo0(data2["book"]["data"])
         elif(algoNumber == 1):
             algo1(data2)
         elif(algoNumber == 2):
-            algo2(data2)"""
+            algo2(data2)
         json_file.close()
     print("Plotting dots: " + str((counter / len(outfiles)) * 100))
     counter += 1
             
-ax1.scatter(SCX, SCY, c=SCC)
+ax1.scatter(SCX, SCY, c=SCC)"""
 
 plt.xlabel('Date')
 plt.ylabel('Price')

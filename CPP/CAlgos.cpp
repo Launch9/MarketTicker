@@ -14,8 +14,7 @@ void bar(char* string){
     printf("%s", string);
 }
 
-void _findAddressChanges(char* filenameInput, char* filenameOutput, char* candleFilePath, int algoType){
-    
+void _findAddressChanges(char* filenameInput, char* filenameOutput, char* candleFilePath, char* summariesInput, int algoType){
     Json::Value root;
     Json::Value book;
     std::ifstream ifs;
@@ -28,36 +27,60 @@ void _findAddressChanges(char* filenameInput, char* filenameOutput, char* candle
         std::cout << errs << std::endl;
         return;
     }
-    
     ifs.close();
     ifs.open(candleFilePath);
     Json::Value candles;
     Json::CharReaderBuilder builder2;
-    builder["collectComments"] = true;
+    builder2["collectComments"] = true;
     std::string errs2;
     if (!parseFromStream(builder2, ifs, &candles, &errs2)) {
         std::cout << "Throwing Error!" << std::endl;
         std::cout << errs2 << std::endl;
         return;
     }
+    ifs.close();
+    
+    ifs.open(summariesInput);
+    Json::Value summaries;
+    Json::CharReaderBuilder builder3;
+    builder3["collectComments"] = true;
+    std::string errs3;
+    if (!parseFromStream(builder3, ifs, &summaries, &errs3)) {
+        std::cout << "Throwing Error!" << std::endl;
+        std::cout << errs3 << std::endl;
+        return;
+    }
+    
     book = root["book"];
     Json::Value top;
     switch(algoType) {
         case 0:
-            top = algo0(book, candles);
+            top = algo0(book, candles, summaries);
             break;
         case 1:
-            top = algo1(book, candles);
+            top = algo1(book, candles, summaries);
             break;
         case 2:
-            top = algo2(book, candles);
+            top = algo2(book, candles, summaries);
+            break;
+        case 3:
+            top = algo3(book, candles, summaries);
+            break;
+        case 4:
+            top = algo4(book, candles, summaries);
+            break;
+        case 5:
+            top = algo5(book, candles, summaries);
+            break;
+        case 6:
+            top = algo6(book, candles, summaries);
             break;
     }
     //Writing results to file
-    Json::StreamWriterBuilder builder3;
+    Json::StreamWriterBuilder builder4;
     builder["commentStyle"] = "None";
     builder["indentation"] = "   ";
-    std::unique_ptr<Json::StreamWriter> writer(builder3.newStreamWriter());
+    std::unique_ptr<Json::StreamWriter> writer(builder4.newStreamWriter());
     std::ofstream outputFileStream(filenameOutput);
     writer -> write(top, &outputFileStream);
     return;
@@ -67,8 +90,8 @@ extern "C" {
     void Foo_bar(char* aString){
         bar(aString);
     }
-    void findAddressChanges(char* filenameInput, char* filenameOutput, char* candleFilePath, int algoType){
-        _findAddressChanges(filenameInput, filenameOutput, candleFilePath, algoType);
+    void findAddressChanges(char* filenameInput, char* filenameOutput, char* candleFilePath, char* summariesInput, int algoType){
+        _findAddressChanges(filenameInput, filenameOutput, candleFilePath, summariesInput, algoType);
     }
 }
 

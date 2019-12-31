@@ -1,13 +1,14 @@
-#include <iostream>
-#include <string>
-#include <unistd.h>
-#include <stdio.h>
-#include <experimental/filesystem>
-#include <json/json.h>
-#include <fstream>
-#include <iostream>
-#include <json/writer.h>
-
+#include <../iostream>
+#include <../string>
+#include <../unistd.h>
+#include <../stdio.h>
+#include <../experimental/filesystem>
+#include <../json/json.h>
+#include <../fstream>
+#include <../iostream>
+#include <../json/writer.h>
+#include <../ctime>
+#include <../cstring>
 void sortAndSeperateFill(Json::Value book, std::string sortBy, std::vector<Json::Value> &sortedSellList, std::vector<Json::Value> &sortedBuyList){
     for(unsigned int i = 0; i < book["f"].size(); i++){
         if(book["f"][i]["OT"] == "SELL"){
@@ -68,6 +69,14 @@ void sortAndSeperateInstant(Json::Value book, std::string sortBy, std::vector<Js
     }
 }
 
+time_t convertTimeToEpoch(const char* theTime, const char* format = "%Y-%m-%d %H:%M:%S")
+{
+    std::tm tmTime;
+    memset(&tmTime, 0, sizeof(tmTime));
+    strptime(theTime, format, &tmTime);
+    return mktime(&tmTime);
+}
+
 std::string DecimalToHexadecimal(int dec) {
 	if (dec < 1) return "00";
 	int hex = dec;
@@ -99,6 +108,24 @@ std::string RGBToHexadecimal(int red, int green, int blue, int alpha) {
     }
     else if(alpha < 0){
         alpha = 0;
+    }
+    if(red > 255){
+        red = 255;
+    }
+    else if(red < 0){
+        red = 0;
+    }
+    if(blue > 255){
+        blue = 255;
+    }
+    else if(blue < 0){
+        blue = 0;
+    }
+    if(green > 255){
+        green = 255;
+    }
+    else if(green < 0){
+        green = 0;
     }
     std::string as = DecimalToHexadecimal(alpha);
 	return '#' + rs + gs + bs + as;
